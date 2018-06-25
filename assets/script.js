@@ -75,12 +75,15 @@ const game = (() => {
   }
 
   const updateCellView = cell => {
-    cellElements[cell].textContent = currentPlayer().marker
+    cellElements[cell].innerHTML = 
+    currentPlayer().marker === "x" ? 
+    "<i class='fas fa-times'></i>" :
+    "<i class='far fa-circle'></i>"
   }
 
   const refreshCellView = () => {
     for(let i = 0; i < 9; i ++) {
-      cellElements[i].textContent = "."
+      cellElements[i].textContent = ""
     }
   }
 
@@ -267,14 +270,14 @@ const Computer = (name = "Computer", marker, difficulty = 2) => {
 let a = Player("AAAA", "x")
 //console.log(a.marker)
 
-let b = Player("BBBB", "o")
+let b = Player("BBBB", "b")
 //console.log(b.marker)
 
 
 let d = Computer("DDD", "d", 1)
 //console.log(c.marker)
 
-let c = Computer("CCC", "y", 9)
+let c = Computer("CCC", "o", 2)
 //console.log(c.marker)
 
 game.initialize(a, c)
