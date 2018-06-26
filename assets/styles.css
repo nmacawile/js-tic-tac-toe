@@ -232,7 +232,6 @@ a:hover {
 
 .cell:hover {
   font-size: 3rem;
-  background-color: #ddd;
 }
 
 .cell:active {
@@ -245,7 +244,7 @@ a:hover {
   background-color: #fff;
   animation: pulse .5s ease 2;
 }
-
+width
 .status {
   text-align: center;
   padding: .2rem 0;
