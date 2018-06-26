@@ -325,9 +325,6 @@ const Computer = (name , marker, difficulty = 2) => {
       return stored
     }, [])
 
-    if (depth === 0)
-      console.log(minimaxedMoves)
-
     return bestMoves[Math.floor(Math.random() * bestMoves.length)]
   }
 
