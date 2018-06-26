@@ -1,3 +1,47 @@
+// Game mode
+let gameMode = "p2"
+let selectedGameMode = gameMode
+
+// Game mode modal close / cancel game mode selection
+const cancelCreateBtn = document.querySelector("#cancel-create")
+const modalBg = document.querySelector(".modal-background")
+cancelCreateBtn.addEventListener('click', e => modalBg.classList.add("hidden"))
+
+
+// Reset selected item for game mode selection
+const gameModeSelectionBtns = document.querySelectorAll(".game-mode")
+const resetSelection = () => {
+  gameModeSelectionBtns.forEach(btn => btn.classList.remove("selected"))
+}
+
+// Game mode modal open
+document.addEventListener('click', e => {
+  if (e.target && e.target.className === "player-name") {
+    resetSelection()    
+    selectedGameMode = gameMode
+    document.getElementById(gameMode).classList.add("selected")
+    modalBg.classList.remove("hidden")
+  }
+})
+
+// Game mode selection
+document.addEventListener('click', e => {
+  if (e.target && e.target.className === "game-mode") {
+    document.getElementById(selectedGameMode).classList.remove("selected")
+    selectedGameMode = e.target.id
+    document.getElementById(selectedGameMode).classList.add("selected")
+  }
+})
+
+// Proceed game mode change
+const proceedCreateBtn = document.querySelector("#proceed-create")
+proceedCreateBtn.addEventListener('click', e => { 
+  gameMode = selectedGameMode
+  modalBg.classList.add("hidden")
+  game.initialize()
+})
+
+// Board cells
 let cellElements = []
 for(let i = 0; i < 9; i ++) {
   element = document.querySelector(`#cell_${i}`)
@@ -5,19 +49,19 @@ for(let i = 0; i < 9; i ++) {
 }
 
 document.addEventListener('click', e => {  
-  if (e.target && e.target.className === "cell") {
+  if (e.target && e.target.classList.contains("cell")) {
     let cellNo = e.target.dataset["index"]
     if (!game.isOver() && !game.currentPlayer().isComputer) {
       game.currentPlayer().markThis(cellNo)
     }
     else if(game.isOver())
-      console.log("It's over.")
+      game.newRound()
     else if (game.currentPlayer().isComputer)
       console.log(`Wait for your turn.`)
   }
 })
 
-
+// Game module
 const game = (() => {
   let _game  
   let _activeTurn
@@ -33,7 +77,7 @@ const game = (() => {
     let cells = []
     for (let i = 0; i < 9; i ++)
       cells.push("")
-    return cells
+    _board = cells
   }
 
   const switchTurn = () => {
@@ -47,19 +91,51 @@ const game = (() => {
 
   const currentPlayer = () => _players[_activeTurn]
 
+  playerNameElements = [document.getElementById("p1-name"),
+                        document.getElementById("p2-name")]
+  const generatePlayers = () => {
+    let p1 = Player("P1", "x")
+    let p2
+    switch (gameMode) {
+      case "easy": 
+        p2 = Computer("EASY AI", "o", 1)
+        break;
+      case "medium": 
+        p2 = Computer("MEDIUM AI", "o", 5)
+        break;
+      case "master": 
+        p2 = Computer("MASTER AI", "o", 8)
+        break;
+      default: 
+        p2 = Player("P2", "o")
+    }
+    playerNameElements[0].textContent = p1.name
+    playerNameElements[1].textContent = p2.name
+    _players = [p1, p2]
+  }
+
   const board = () => _board
 
   const players = () => _players
- 
-  const initialize = (player1, player2) => {
-    _board = newBoard()    
+
+  const setupGame = () => {    
+    newBoard()    
     refreshCellView()
-    _players = [player1, player2]
-    _activeTurn = 0
+    _activeTurn = Math.floor(Math.random() * 2)
+    updateScores()
     _isOver = false
-    _status = `It's ${currentPlayer().name}'s turn!`
+    _status = `It's ${currentPlayer().name}'s turn`
     status()
-    notifyComputer()
+    notifyComputer()   
+  }
+ 
+  const initialize = () => {    
+    generatePlayers()
+    setupGame()
+  }
+
+  const newRound = () => { 
+    if (_isOver) setupGame()
   }
   
   const mark = cell => {
@@ -74,16 +150,15 @@ const game = (() => {
     }
   }
 
+  const boardMarkers = ["<i class='fas fa-times'></i>", "<i class='far fa-circle'></i>"]
   const updateCellView = cell => {
-    cellElements[cell].innerHTML = 
-    currentPlayer().marker === "x" ? 
-    "<i class='fas fa-times'></i>" :
-    "<i class='far fa-circle'></i>"
+    cellElements[cell].innerHTML = boardMarkers[_activeTurn]
   }
 
   const refreshCellView = () => {
     for(let i = 0; i < 9; i ++) {
       cellElements[i].textContent = ""
+      cellElements[i].classList.remove("highlight")
     }
   }
 
@@ -107,6 +182,8 @@ const game = (() => {
       _isOver = true
       _status = `${currentPlayer().name} wins!`
       highlightWinningPattern(winningPattern)
+      currentPlayer().score ++
+      updateScores()
       status()
     }
     else if (draw(_board)) {
@@ -120,6 +197,13 @@ const game = (() => {
       status()
       notifyComputer()
     }
+  }
+
+  let playerScoreElements = [document.getElementById("p1-score"), 
+                             document.getElementById("p2-score")]
+  const updateScores = () => {
+    playerScoreElements[0].textContent = _players[0].score
+    playerScoreElements[1].textContent = _players[1].score
   }
 
   const isOver = () => _isOver
@@ -157,15 +241,20 @@ const game = (() => {
 
   const markers = () => _players.map(p => p.marker)
 
+  const statusMessageElement = document.getElementById("status-message")
+  const activeMarkerElement = document.getElementById("active-marker")
   const status = () => {
     console.log(`Players: ${_players[0].name} vs ${_players[1].name}`)
     console.log(_board)
     console.log(_status)
+    statusMessageElement.textContent = _status
+    activeMarkerElement.innerHTML = boardMarkers[_activeTurn]
+
   }
 
   _game = { 
-    board, newBoard, currentPlayer, isOver,
-    initialize, status, mark, players, markers, findEmptyCells, winner, draw
+    board, currentPlayer, isOver,
+    initialize, newRound, status, mark, players, markers, findEmptyCells, winner, draw
   }
   return _game
 })()
@@ -174,16 +263,18 @@ const game = (() => {
 
 const Player = (name, marker) => {
   game
+  let score = 0
   const markThis = (cell) => {
     game.mark(cell)
   }
-  return { name, marker, markThis, game }
+  return { name, marker, markThis, game, score }
 }
 
 // COMPUTER
 
-const Computer = (name = "Computer", marker, difficulty = 2) => {
-  game
+const Computer = (name , marker, difficulty = 2) => {
+  game  
+  let score = 0
   difficulty = (difficulty < 1 || isNaN(difficulty)) ? 1 : difficulty
 
   const markThis = (cell) => {
@@ -262,22 +353,5 @@ const Computer = (name = "Computer", marker, difficulty = 2) => {
 
 
   let isComputer = true
-  return { name, marker, markThis, game, isComputer, notify, findBestMove, evaluate }
+  return { name, marker, markThis, game, isComputer, notify, findBestMove, evaluate, score }
 }
-
-
-
-let a = Player("AAAA", "x")
-//console.log(a.marker)
-
-let b = Player("BBBB", "b")
-//console.log(b.marker)
-
-
-let d = Computer("DDD", "d", 1)
-//console.log(c.marker)
-
-let c = Computer("CCC", "o", 2)
-//console.log(c.marker)
-
-game.initialize(a, c)
