@@ -2,7 +2,11 @@
 
 A Tic-Tac-Toe browser game running on JavaScript.
 
-## Features:
+## Links
+- [Game](https://htmlpreview.github.io/?https://github.com/nmacawile/js-tic-tac-toe/blob/master/index.html)
+- [Project page](https://www.theodinproject.com/courses/javascript/lessons/tic-tac-toe-javascript)
+
+## Features
 - Play against another player
 - Play against AI with various difficulty settings
 - Change game mode anytime by clicking on any player's name
