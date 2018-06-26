@@ -271,3 +271,18 @@ a:hover {
     width: 480px;
   }
 }
+
+@media (min-width: 1400px) {
+  html {
+    font-size: 32px;
+  }
+
+  .board {
+    height: 580px;
+    width: 580px;
+  }
+
+  .match-info {
+    width: 580px;
+  }
+}
