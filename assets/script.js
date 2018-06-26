@@ -131,6 +131,8 @@ const game = (() => {
  
   const initialize = () => {    
     generatePlayers()
+    _scores = [0, 0]
+    updateScores()
     setupGame()
   }
 
@@ -182,7 +184,7 @@ const game = (() => {
       _isOver = true
       _status = `${currentPlayer().name} wins!`
       highlightWinningPattern(winningPattern)
-      currentPlayer().score ++
+      _scores[_activeTurn] ++
       updateScores()
       status()
     }
@@ -201,9 +203,10 @@ const game = (() => {
 
   let playerScoreElements = [document.getElementById("p1-score"), 
                              document.getElementById("p2-score")]
+  let _scores = [0, 0]
   const updateScores = () => {
-    playerScoreElements[0].textContent = _players[0].score
-    playerScoreElements[1].textContent = _players[1].score
+    playerScoreElements[0].textContent = _scores[0]
+    playerScoreElements[1].textContent = _scores[1]
   }
 
   const isOver = () => _isOver
@@ -263,18 +266,16 @@ const game = (() => {
 
 const Player = (name, marker) => {
   game
-  let score = 0
   const markThis = (cell) => {
     game.mark(cell)
   }
-  return { name, marker, markThis, game, score }
+  return { name, marker, markThis, game }
 }
 
 // COMPUTER
 
 const Computer = (name , marker, difficulty = 2) => {
-  game  
-  let score = 0
+  game
   difficulty = (difficulty < 1 || isNaN(difficulty)) ? 1 : difficulty
 
   const markThis = (cell) => {
@@ -353,5 +354,5 @@ const Computer = (name , marker, difficulty = 2) => {
 
 
   let isComputer = true
-  return { name, marker, markThis, game, isComputer, notify, findBestMove, evaluate, score }
+  return { name, marker, markThis, game, isComputer, notify, findBestMove, evaluate }
 }
