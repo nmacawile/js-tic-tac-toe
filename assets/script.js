@@ -51,7 +51,10 @@ for(let i = 0; i < 9; i ++) {
 document.addEventListener('click', e => {  
   if (e.target && e.target.classList.contains("cell")) {
     let cellNo = e.target.dataset["index"]
-    if (!game.isOver() && !game.currentPlayer().isComputer) {
+    if (!game.isInitialized()) {
+      modalBg.classList.remove("hidden")
+    }
+    else if (!game.isOver() && !game.currentPlayer().isComputer) {
       game.currentPlayer().markThis(cellNo)
     }
     else if(game.isOver())
@@ -128,6 +131,8 @@ const game = (() => {
     status()
     notifyComputer()   
   }
+
+  const isInitialized = () => (_activeTurn === 0 || _activeTurn === 1)
  
   const initialize = () => {    
     generatePlayers()
@@ -256,7 +261,7 @@ const game = (() => {
   }
 
   _game = { 
-    board, currentPlayer, isOver,
+    board, currentPlayer, isOver, isInitialized,
     initialize, newRound, status, mark, players, markers, findEmptyCells, winner, draw
   }
   return _game
