@@ -117,7 +117,7 @@ const game = (() => {
     _players = [p1, p2]
   }
 
-  const board = () => _board
+  const board = () => _board.slice(0)
 
   const players = () => _players
 
@@ -262,7 +262,7 @@ const game = (() => {
 
   _game = { 
     board, currentPlayer, isOver, isInitialized,
-    initialize, newRound, status, mark, players, markers, findEmptyCells, winner, draw
+    initialize, newRound, status, mark, markers, findEmptyCells, winner, draw
   }
   return _game
 })()
@@ -359,5 +359,5 @@ const Computer = (name , marker, difficulty = 2) => {
 
 
   let isComputer = true
-  return { name, marker, markThis, game, isComputer, notify, findBestMove, evaluate }
+  return { name, marker, markThis, game, isComputer, notify }
 }
