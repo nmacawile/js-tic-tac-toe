@@ -3,7 +3,7 @@
 A Tic-Tac-Toe browser game running on JavaScript.
 
 ## Links
-- [Game](https://htmlpreview.github.io/?https://github.com/nmacawile/js-tic-tac-toe/blob/master/index.html)
+- [Game](https://nmacawile.github.io/js-tic-tac-toe/)
 - [Project page](https://www.theodinproject.com/courses/javascript/lessons/tic-tac-toe-javascript)
 
 ## Features
